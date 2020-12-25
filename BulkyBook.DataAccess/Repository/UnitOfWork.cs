@@ -10,11 +10,11 @@ namespace BulkyBook.DataAccess.Repository
         public UnitOfWork(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
-            CategoryRepository = new CategoryRepository(_dbContext);
+            Category = new CategoryRepository(_dbContext);
             StoredProcedureCall = new StoredProcedureCall(_dbContext);
         }
 
-        public ICategoryRepository CategoryRepository { get; private set; }
+        public ICategoryRepository Category { get; private set; }
 
         public IStoredProcedureCall StoredProcedureCall { get; private set; }
 
