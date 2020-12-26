@@ -6,3 +6,9 @@
 Your target project 'BulkyBook' doesn't match your migrations assembly 'BulkyBook.DataAccess'. Either change your target project or change your migrations assembly.
 Change your migrations assembly by using DbContextOptionsBuilder. E.g. options.UseSqlServer(connection, b => b.MigrationsAssembly("BulkyBook")). By default, the migrations assembly is the assembly containing the DbContext.
 Change your target project to the migrations project by using the Package Manager Console's Default project drop-down list, or by executing "dotnet ef" from the directory containing the migrations project.
+
+- Used Dapper for calling StoredProcedure. 
+- Created an empty migration and coded the SP in code and then executed update-database. This updated the database with the new Stored Procedures.
+- CRUP operations by calling Stored Procedure was implmented for CoverType Controller.
+
+- Used Tiny.Cloud website to make our description for product more editable with font formats options.(Bold, Italic etc)
