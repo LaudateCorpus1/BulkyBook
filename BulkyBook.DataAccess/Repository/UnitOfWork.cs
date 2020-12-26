@@ -11,10 +11,12 @@ namespace BulkyBook.DataAccess.Repository
         {
             _dbContext = dbContext;
             Category = new CategoryRepository(_dbContext);
+            CoverType = new CoverTypeRepository(_dbContext);
             StoredProcedureCall = new StoredProcedureCall(_dbContext);
         }
 
         public ICategoryRepository Category { get; private set; }
+        public ICoverTypeRepository CoverType { get; private set; }
 
         public IStoredProcedureCall StoredProcedureCall { get; private set; }
 
