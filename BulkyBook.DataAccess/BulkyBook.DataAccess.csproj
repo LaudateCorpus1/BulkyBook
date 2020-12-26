@@ -7,6 +7,8 @@
   <ItemGroup>
     <Compile Remove="Migrations\20201225125448_AddDefaultIdentityMigration.cs" />
     <Compile Remove="Migrations\20201225125448_AddDefaultIdentityMigration.Designer.cs" />
+    <Compile Remove="Migrations\20201226105556_AddProductTable.cs" />
+    <Compile Remove="Migrations\20201226105556_AddProductTable.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
