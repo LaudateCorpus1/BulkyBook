@@ -10,3 +10,5 @@ Change your target project to the migrations project by using the Package Manage
 - Used Dapper for calling StoredProcedure. 
 - Created an empty migration and coded the SP in code and then executed update-database. This updated the database with the new Stored Procedures.
 - CRUP operations by calling Stored Procedure was implmented for CoverType Controller.
+
+- Used Tiny.Cloud website to make our description for product more editable with font formats options.(Bold, Italic etc)
