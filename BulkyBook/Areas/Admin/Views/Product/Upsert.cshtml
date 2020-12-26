@@ -125,7 +125,7 @@
                     {
                         <div class="row">
                             <div class="col">
-                                <button type="submit" class="btn btn-primary form-control" onclick="return validateInput()">Create</button>
+                                <button type="submit" class="btn btn-primary form-control" asp-action="Update" onclick="return validateInput()">Create</button>
                             </div>
                             <div class="col">
                                 <a asp-action="Index" class="btn btn-success form-control">Back to List</a>
@@ -135,6 +135,13 @@
                 </div>
             </div>
         </div>
+
+        @if (Model.Product.Id != 0)
+        {
+            <div class="col-3 offset-1 pt-4">
+                <img src="@Model.Product.ImageUrl" width="100%" style="border-radius:5px; border:1px solid #bbb9b9" />
+            </div>
+        }
     </div>
 </form>
 

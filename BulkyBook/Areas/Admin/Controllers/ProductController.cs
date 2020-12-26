@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
+using System.IO;
 
 namespace BulkyBook.Areas.Admin.Controllers
 {
@@ -59,23 +61,72 @@ namespace BulkyBook.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Update(Product product)
+        public IActionResult Update(ProductViewModel productVM)
         {
             if (ModelState.IsValid)
             {
-                if (product.Id == 0)
+                string webRootPath = _hostEnvironment.WebRootPath;
+                var files = HttpContext.Request.Form.Files;
+                if (files != null && files.Any())
                 {
-                    _uow.Product.Add(product);
+                    string filename = Guid.NewGuid().ToString();
+                    var uploads = Path.Combine(webRootPath, @"images\products");
+                    var extension = Path.GetExtension(files[0].FileName);
+
+                    if (productVM.Product.ImageUrl != null)
+                    {
+                        var imagePath = Path.Combine(webRootPath, productVM.Product.ImageUrl.TrimStart('\\'));
+
+                        if (System.IO.File.Exists(imagePath))
+                            System.IO.File.Delete(imagePath);
+                    }
+
+                    using (var fileStream = new FileStream(Path.Combine(uploads, filename + extension), FileMode.Create))
+                    {
+                        files[0].CopyTo(fileStream);
+                    }
+
+                    productVM.Product.ImageUrl = @"\images\products\" + filename + extension;
                 }
                 else
-                    _uow.Product.Update(product);
+                {
+                    if (productVM.Product.Id != 0)
+                    {
+                        var product = _uow.Product.Get(productVM.Product.Id);
+                        productVM.Product.ImageUrl = product.ImageUrl;
+                    }
+                }
+                if (productVM.Product.Id == 0)
+                    _uow.Product.Add(productVM.Product);
+                else
+                    _uow.Product.Update(productVM.Product);
 
                 _uow.Save();
 
                 return RedirectToAction(nameof(Index));
             }
+            else
+            {
+                productVM.CategoryList = _uow.Category.GetAll()
+                    .Select(a => new SelectListItem
+                    {
+                        Value = a.Id.ToString(),
+                        Text = a.Name
+                    });
+                productVM.CoverTypeList = _uow.CoverType.GetAll()
+                    .Select(a => new SelectListItem
+                    {
+                        Value = a.Id.ToString(),
+                        Text = a.Name
+                    });
 
-            return View(product);
+                if (productVM.Product.Id != 0)
+                {
+                    var product = _uow.Product.Get(productVM.Product.Id);
+                }
+            }
+
+            return View(productVM);
         }
 
         [HttpDelete]
@@ -84,6 +135,12 @@ namespace BulkyBook.Areas.Admin.Controllers
             var product = _uow.Product.Get(id);
             if (product != null)
             {
+                string webRootPath = _hostEnvironment.WebRootPath;
+                var imagePath = Path.Combine(webRootPath, product.ImageUrl.TrimStart('\\'));
+
+                if (System.IO.File.Exists(imagePath))
+                    System.IO.File.Delete(imagePath);
+
                 _uow.Product.Remove(product);
                 _uow.Save();
                 return Json(new { success = true, message = "Successfully deleted" });
@@ -97,7 +154,7 @@ namespace BulkyBook.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            var result = _uow.Product.GetAll(includeProperties:"Category,CoverType");
+            var result = _uow.Product.GetAll(includeProperties: "Category,CoverType");
 
             return Json(new { data = result });
         }
