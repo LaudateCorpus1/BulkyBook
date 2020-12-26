@@ -26,7 +26,7 @@ namespace BulkyBook.DataAccess.Repository
 
         public void Execute(string procedureName, DynamicParameters parameters = null)
         {
-            using (SqlConnection sqlCon = new SqlConnection())
+            using (SqlConnection sqlCon = new SqlConnection(_connectionString))
             {
                 sqlCon.Open();
                 sqlCon.Execute(procedureName, parameters, commandType: System.Data.CommandType.StoredProcedure);
@@ -35,7 +35,7 @@ namespace BulkyBook.DataAccess.Repository
 
         public IEnumerable<T> List<T>(string procedureName, DynamicParameters parameters = null)
         {
-            using (SqlConnection sqlCon = new SqlConnection())
+            using (SqlConnection sqlCon = new SqlConnection(_connectionString))
             {
                 sqlCon.Open();
                 return sqlCon.Query<T>(procedureName, parameters, commandType: System.Data.CommandType.StoredProcedure);
@@ -44,7 +44,7 @@ namespace BulkyBook.DataAccess.Repository
 
         public Tuple<IEnumerable<T1>, IEnumerable<T2>> List<T1, T2>(string procedureName, DynamicParameters parameters = null)
         {
-            using (SqlConnection sqlCon = new SqlConnection())
+            using (SqlConnection sqlCon = new SqlConnection(_connectionString))
             {
                 sqlCon.Open();
 
@@ -64,7 +64,7 @@ namespace BulkyBook.DataAccess.Repository
 
         public T OneRecord<T>(string procedureName, DynamicParameters parameters = null)
         {
-            using (SqlConnection sqlCon = new SqlConnection())
+            using (SqlConnection sqlCon = new SqlConnection(_connectionString))
             {
                 sqlCon.Open();
                 var result = sqlCon.Query<T>(procedureName, parameters, commandType: System.Data.CommandType.StoredProcedure);
@@ -75,7 +75,7 @@ namespace BulkyBook.DataAccess.Repository
 
         public T Single<T>(string procedureName, DynamicParameters parameters = null)
         {
-            using (SqlConnection sqlCon = new SqlConnection())
+            using (SqlConnection sqlCon = new SqlConnection(_connectionString))
             {
                 sqlCon.Open();
                 return (T)Convert.ChangeType(sqlCon.ExecuteScalar<T>(procedureName, parameters, commandType: System.Data.CommandType.StoredProcedure), typeof(T));
