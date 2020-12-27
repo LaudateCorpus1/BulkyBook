@@ -7,10 +7,14 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.IO;
+using Microsoft.AspNetCore.Authorization;
+using BulkyBook.Utility;
 
 namespace BulkyBook.Areas.Admin.Controllers
 {
     [Area("Admin")]
+
+    [Authorize(Roles = SD.Roles.Admin)]
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _uow;

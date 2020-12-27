@@ -2,11 +2,15 @@
 using BulkyBook.Models;
 using BulkyBook.Utility;
 using Dapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static BulkyBook.Utility.SD;
 
 namespace BulkyBook.Areas.admin.Controllers
 {
     [Area("Admin")]
+
+    [Authorize(Roles = SD.Roles.Admin +  "," +SD.Roles.Employee)]
     public class CompanyController : Controller
     {
         private readonly IUnitOfWork _uow;
