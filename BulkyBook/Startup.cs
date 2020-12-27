@@ -38,6 +38,7 @@ namespace BulkyBook
             services.AddRazorPages();
             services.AddAutoMapper(typeof(MappingProfile));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.Configure<EmailOptions>(Configuration);
 
             services.ConfigureApplicationCookie(options =>
             {
