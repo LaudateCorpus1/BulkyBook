@@ -28,3 +28,10 @@ Change your target project to the migrations project by using the Package Manage
   - Set up with Google+ API
   - Set up OAuth 2.0 Client IDs and OAuth Consent screen to External.
   - Get the App ID and App secret and configure the credential in Start up. You need to also install a Google .net core package.
+  
+  
+  
+- Things to improve
+  - The way images are stored.
+  - UnitOfWork (include option if this can be improved)
+  - UnitOfWork
