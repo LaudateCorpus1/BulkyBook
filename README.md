@@ -14,3 +14,17 @@ Change your target project to the migrations project by using the Package Manage
 - Used Tiny.Cloud website to make our description for product more editable with font formats options.(Bold, Italic etc)
 
 - Authorize based on roles implemented. Authurize attribute with Roles were set at controller level and Configure application start up to return login page if unauthorised.
+
+- Integratimg with Facebook Login
+  - Create an account in facebook developer website https://developers.facebook.com/
+  - Create an APP ID 
+  - Set up with facebook login
+  - Get the App ID and App secret and configure the credential in Start up. You need to also install a Facebook .net core package.
+
+
+- Integratimg with Google Login
+  - Create an account in https://console.developers.google.com/
+  - Create a Project
+  - Set up with Google+ API
+  - Set up OAuth 2.0 Client IDs and OAuth Consent screen to External.
+  - Get the App ID and App secret and configure the credential in Start up. You need to also install a Google .net core package.
