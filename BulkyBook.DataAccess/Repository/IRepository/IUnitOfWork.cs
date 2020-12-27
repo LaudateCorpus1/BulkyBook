@@ -10,7 +10,9 @@ namespace BulkyBook.DataAccess.Repository.IRepository
         ICompanyRepository Company { get; }
         IStoredProcedureCall StoredProcedureCall { get; }
         IApplicationUserRepository ApplicationUser { get; }
-
+        IOrderDetailsRepository OrderDetails { get; }
+        IOrderHeaderRepository OrderHeader { get; }
+        IShoppingCartRepository ShoppingCart { get; }
         void Save();
     }
 }
