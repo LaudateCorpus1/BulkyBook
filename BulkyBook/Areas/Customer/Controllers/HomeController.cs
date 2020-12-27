@@ -31,6 +31,19 @@ namespace BulkyBook.Areas.Customer.Controllers
             return View();
         }
 
+        public IActionResult Details(int id)
+        {
+            var productFromDb = _uow.Product.GetFirstOrDefault(a => a.Id == id, includeProperties: "Category,CoverType");
+
+            var shoppingCart = new ShoppingCart()
+            {
+                Product = productFromDb,
+                ProductId = productFromDb.Id
+            };
+
+            return View(shoppingCart);
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
