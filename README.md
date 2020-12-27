@@ -12,3 +12,5 @@ Change your target project to the migrations project by using the Package Manage
 - CRUP operations by calling Stored Procedure was implmented for CoverType Controller.
 
 - Used Tiny.Cloud website to make our description for product more editable with font formats options.(Bold, Italic etc)
+
+- Authorize based on roles implemented. Authurize attribute with Roles were set at controller level and Configure application start up to return login page if unauthorised.
