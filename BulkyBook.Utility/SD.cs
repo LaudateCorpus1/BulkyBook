@@ -19,6 +19,11 @@
             public const string Employee = "Employee";
         }
 
+        public static class Constants
+        {
+            public const string ShoppingCartSession = "ShoppingCartSession";
+        }
+
         public static double GetPriceBasedOnQuantity(double quantity, double price, double price50, double price100)
         {
             if (quantity < 50)

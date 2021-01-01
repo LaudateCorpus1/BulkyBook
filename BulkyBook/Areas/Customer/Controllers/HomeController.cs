@@ -7,6 +7,10 @@ using BulkyBook.Models;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using System.Linq;
+using Microsoft.AspNetCore.Http;
+using BulkyBook.Utility;
+using System;
 
 namespace BulkyBook.Areas.Customer.Controllers
 {
@@ -24,6 +28,15 @@ namespace BulkyBook.Areas.Customer.Controllers
 
         public IActionResult Index()
         {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claims = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (claims != null)
+            {
+                var count = _uow.ShoppingCart.GetAll(a => a.ApplicationUserId == claims.Value).Count();
+                HttpContext.Session.SetInt32(SD.Constants.ShoppingCartSession, count);
+            }
+
             IEnumerable<Product> productList = _uow.Product.GetAll(includeProperties: "Category,CoverType");
             return View(productList);
         }
@@ -69,7 +82,10 @@ namespace BulkyBook.Areas.Customer.Controllers
                     // This line can be removed as entity framework does the tracking and if any object is retrieved from db and then a property is updated and the Save() is called. it will automatically save the changes without .Update method being invoked.
                 }
                 _uow.Save();
+                var count = _uow.ShoppingCart.GetAll(a => a.ApplicationUserId == cart.ApplicationUserId).Count();
 
+                HttpContext.Session.SetInt32(SD.Constants.ShoppingCartSession, count);
+                ////HttpContext.Session.SetInt32(SD.Constants.ShoppingCartSession, count); Can be used any of the option.
                 return RedirectToAction(nameof(Index));
             }
             else

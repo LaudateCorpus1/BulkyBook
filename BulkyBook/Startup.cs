@@ -13,6 +13,7 @@ using BulkyBook.Helper;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using BulkyBook.Utility;
 using System;
+using Microsoft.AspNetCore.Http;
 
 namespace BulkyBook
 {
@@ -58,7 +59,7 @@ namespace BulkyBook
                 options.ClientId = Configuration["Authentication:Google:AppId"];
                 options.ClientSecret = Configuration["Authentication:Google:AppSecret"];
             });
-
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
