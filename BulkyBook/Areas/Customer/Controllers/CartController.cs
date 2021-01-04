@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using AutoMapper;
 using BulkyBook.DataAccess.Repository.IRepository;
 using BulkyBook.Models.ViewModels;
 using BulkyBook.Utility;
@@ -20,15 +21,19 @@ namespace BulkyBook.Areas.Customer.Controllers
         private readonly IUnitOfWork _uow;
         private readonly IEmailSender _emailSender;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IMapper _mapper;
+
         public ShoppingCartViewModel shoppingCartViewModel { get; set; }
 
         public CartController(IUnitOfWork uow,
             IEmailSender emailSender,
-            UserManager<IdentityUser> userManager)
+            UserManager<IdentityUser> userManager,
+            IMapper mapper)
         {
             _uow = uow;
             _emailSender = emailSender;
             _userManager = userManager;
+            _mapper = mapper;
         }
         public IActionResult Index()
         {
@@ -127,6 +132,36 @@ namespace BulkyBook.Areas.Customer.Controllers
             HttpContext.Session.SetInt32(SD.Constants.ShoppingCartSession, count - 1);
 
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Summary()
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+            shoppingCartViewModel = new ShoppingCartViewModel()
+            {
+                OrderHeader = new Models.OrderHeader(),
+                ShoppingCarts = _uow.ShoppingCart.GetAll(a => a.ApplicationUserId == claim.Value, includeProperties: "Product")
+            };
+            var applicationUser = _uow.ApplicationUser.GetFirstOrDefault(a => a.Id == claim.Value, includeProperties: "Company");
+            ////shoppingCartViewModel.OrderHeader = _mapper.Map<Models.OrderHeader>(applicationUser);
+            shoppingCartViewModel.OrderHeader.ApplicationUser = applicationUser;
+
+            foreach (var cart in shoppingCartViewModel.ShoppingCarts)
+            {
+                cart.Price = SD.GetPriceBasedOnQuantity(cart.Count, cart.Product.Price, cart.Product.Price50, cart.Product.Price100);
+                shoppingCartViewModel.OrderHeader.OrderTotal += cart.Price * cart.Count;
+            }
+
+            shoppingCartViewModel.OrderHeader.Name = shoppingCartViewModel.OrderHeader.ApplicationUser.Name;
+            shoppingCartViewModel.OrderHeader.PhoneNumber = shoppingCartViewModel.OrderHeader.ApplicationUser.PhoneNumber;
+            shoppingCartViewModel.OrderHeader.StreetAddress = shoppingCartViewModel.OrderHeader.ApplicationUser.StreetAddress;
+            shoppingCartViewModel.OrderHeader.City = shoppingCartViewModel.OrderHeader.ApplicationUser.City;
+            shoppingCartViewModel.OrderHeader.State = shoppingCartViewModel.OrderHeader.ApplicationUser.State;
+            shoppingCartViewModel.OrderHeader.PostalCode = shoppingCartViewModel.OrderHeader.ApplicationUser.PostalCode;
+
+            return View(shoppingCartViewModel);
         }
     }
 }
