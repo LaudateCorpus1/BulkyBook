@@ -1,10 +1,12 @@
-﻿using System.Security.Claims;
+﻿using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using BulkyBook.DataAccess.Repository.IRepository;
 using BulkyBook.Models.ViewModels;
 using BulkyBook.Utility;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -88,6 +90,41 @@ namespace BulkyBook.Areas.Customer.Controllers
             cart.Count += 1;
             cart.Price = SD.GetPriceBasedOnQuantity(cart.Count, cart.Product.Price, cart.Product.Price50, cart.Product.Price100);
             _uow.Save();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Minus(int cartId)
+        {
+            var cart = _uow.ShoppingCart.GetFirstOrDefault(a => a.Id == cartId, includeProperties: "Product");
+
+            if (cart.Count == 1)
+            {
+                var count = _uow.ShoppingCart.GetAll(a => a.ApplicationUserId == cart.ApplicationUserId).Count();
+                _uow.ShoppingCart.Remove(cart);
+                _uow.Save();
+
+                HttpContext.Session.SetInt32(SD.Constants.ShoppingCartSession, count - 1);
+            }
+            else
+            {
+                cart.Count -= 1;
+                cart.Price = SD.GetPriceBasedOnQuantity(cart.Count, cart.Product.Price, cart.Product.Price50, cart.Product.Price100);
+                _uow.Save();
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Remove(int cartId)
+        {
+            var cart = _uow.ShoppingCart.GetFirstOrDefault(a => a.Id == cartId, includeProperties: "Product");
+
+            var count = _uow.ShoppingCart.GetAll(a => a.ApplicationUserId == cart.ApplicationUserId).Count();
+            _uow.ShoppingCart.Remove(cart);
+            _uow.Save();
+
+            HttpContext.Session.SetInt32(SD.Constants.ShoppingCartSession, count - 1);
 
             return RedirectToAction(nameof(Index));
         }
