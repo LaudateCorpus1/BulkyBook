@@ -24,6 +24,24 @@
             public const string ShoppingCartSession = "ShoppingCartSession";
         }
 
+        public static class OrderStatus
+        {
+            public const string Pending = "Pending";
+            public const string Approved = "Approved";
+            public const string Processing = "Processing";
+            public const string Shipped = "Shipped";
+            public const string Cancelled = "Cancelled";
+            public const string Refunded = "Refunded";
+        }
+
+        public static class PaymentStatus
+        {
+            public const string Pending = "Pending";
+            public const string Approved = "Approved";
+            public const string ApprovedForDelayedPayment = "ApprovedForDelayedPayment";
+            public const string Rejected = "Rejected";
+        }
+
         public static double GetPriceBasedOnQuantity(double quantity, double price, double price50, double price100)
         {
             if (quantity < 50)

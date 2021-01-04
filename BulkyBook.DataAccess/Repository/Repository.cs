@@ -23,6 +23,11 @@ namespace BulkyBook.DataAccess.Repository
             _dbset.Add(entity);
         }
 
+        public void AddRange(IEnumerable<T> entities)
+        {
+            _dbset.AddRange(entities);
+        }
+
         public T Get(int id)
         {
             return _dbset.Find(id);
