@@ -171,6 +171,20 @@ namespace BulkyBook.Areas.Identity.Pages.Account
                 }
             }
 
+            Input = new InputModel()
+            {
+                CompanyList = _uow.Company.GetAll().Select(a => new SelectListItem
+                {
+                    Text = a.Name,
+                    Value = a.Id.ToString()
+                }),
+                RoleList = _roleManager.Roles.Where(a => a.Name != SD.Roles.IndividualCustomer).Select(a => a.Name).Select(a => new SelectListItem
+                {
+                    Text = a,
+                    Value = a
+                }),
+            };
+
             // If we got this far, something failed, redisplay form
             return Page();
         }
