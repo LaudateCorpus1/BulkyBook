@@ -12,6 +12,7 @@
 
 
 <form method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <br />
     <div class="backgroundWhiteBorder">
         <div class="container">
@@ -40,6 +41,7 @@
                                     </div>
                                     <div class="col-9">
                                         <input asp-for="OrderHeader.Name" type="text" class="form-control" />
+                                        <span asp-validation-for="OrderHeader.Name" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="row my-1">
@@ -48,6 +50,7 @@
                                     </div>
                                     <div class="col-9">
                                         <input asp-for="OrderHeader.PhoneNumber" type="text" class="form-control" />
+                                        <span asp-validation-for="OrderHeader.PhoneNumber" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="row my-1">
@@ -56,6 +59,7 @@
                                     </div>
                                     <div class="col-9">
                                         <input asp-for="OrderHeader.StreetAddress" type="text" class="form-control" />
+                                        <span asp-validation-for="OrderHeader.StreetAddress" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="row my-1">
@@ -64,6 +68,7 @@
                                     </div>
                                     <div class="col-9">
                                         <input asp-for="OrderHeader.City" type="text" class="form-control" />
+                                        <span asp-validation-for="OrderHeader.City" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="row my-1">
@@ -71,7 +76,8 @@
                                         <label>State</label>
                                     </div>
                                     <div class="col-9">
-                                        <input asp-for="OrderHeader.State"  type="text" class="form-control" />
+                                        <input asp-for="OrderHeader.State" type="text" class="form-control" />
+                                        <span asp-validation-for="OrderHeader.State" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="row my-1">
@@ -80,6 +86,7 @@
                                     </div>
                                     <div class="col-9">
                                         <input asp-for="OrderHeader.PostalCode" type="text" class="form-control" />
+                                        <span asp-validation-for="OrderHeader.PostalCode" class="text-danger"></span>
                                     </div>
                                 </div>
                             </div>
@@ -114,23 +121,30 @@
                             <p style="color:maroon; font-size:14px;">Estimate Arrival Date: @DateTime.Now.AddDays(7).ToShortDateString() - @DateTime.Now.AddDays(14).ToShortDateString()</p>
                         </div>
                         <div class="col-12 col-md-4">
-                            @{ 
+                            @{
                                 var orderTotalForStripe = Model.OrderHeader.OrderTotal * 100;
                             }
-                            <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-                                    data-keyboard="@Stripe.Value.PublishableKey"
-                                    data-amount="@orderTotalForStripe"
-                                    data-name="Bulky Book"
-                                    data-label="Place order"
-                                    data-description="Get books for less"
-                                    data-locale="auto"
-                                    data-allow-remember-me="false"
-                                    data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
-                                    ></script>
-                            <script>
-                                document.getElementsByClassName("stripe-button-el")[0].style.display = 'none';
-                            </script>
-                            <button type="submit" value="Place Order" class="btn btn-success form-control">Place Order</button>
+
+                            @if (Model.OrderHeader.ApplicationUser.Company == null || Model.OrderHeader.ApplicationUser.Company.IsAuthorizedCompany)
+                            {
+                                <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+                                        data-key="@Stripe.Value.PublishableKey"
+                                        data-amount="@orderTotalForStripe"
+                                        data-name="Bulky Book"
+                                        data-label="Place order"
+                                        data-description="Get books for less"
+                                        data-locale="auto"
+                                        data-allow-remember-me="false"
+                                        data-image="https://stripe.com/img/documentation/checkout/marketplace.png"></script>
+                                <script>
+                                    document.getElementsByClassName("stripe-button-el")[0].style.display = 'none';
+                                </script>
+                                <button type="submit" value="Place Order" class="btn btn-success form-control">Place Order</button>
+                            }
+                            else
+                            {
+                                <button type="submit" value="Place Order" class="btn btn-primary form-control">Place Order</button>
+                            }
                         </div>
                     </div>
                 </div>
@@ -138,3 +152,7 @@
         </div>
     </div>
 </form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
