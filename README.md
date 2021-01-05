@@ -29,9 +29,16 @@ Change your target project to the migrations project by using the Package Manage
   - Set up OAuth 2.0 Client IDs and OAuth Consent screen to External.
   - Get the App ID and App secret and configure the credential in Start up. You need to also install a Google .net core package.
   
+- Integration with Stripe payment
+  - Create an account in Stripe.
+  - Get Client ID and Secret.
+  - Configure in Start up middleware.
+  - Use javascript script to call the existing UI.
+  
+- BindProperty - Can be used on the model to post the updated model from View to controller without passing the object in method parameter.
   
   
 - Things to improve
   - The way images are stored.
   - UnitOfWork (include option if this can be improved)
-  - UnitOfWork
+  - UnitOfWork try to check your project implementation.
