@@ -9,6 +9,7 @@ using BulkyBook.Models.ViewModels;
 using BulkyBook.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
 
 namespace BulkyBook.Areas.Admin.Controllers
 {
@@ -75,6 +76,93 @@ namespace BulkyBook.Areas.Admin.Controllers
             }
 
             return Json(new { data = orderHeadersList });
+        }
+
+        [Authorize(Roles = SD.Roles.Admin + "," + SD.Roles.Employee)]
+        public IActionResult StartProcessing(int id)
+        {
+            OrderHeader orderHeader = _uow.OrderHeader.GetFirstOrDefault(a => a.Id == id);
+            orderHeader.OrderStatus = SD.OrderStatus.Processing;
+            _uow.Save();
+            return RedirectToAction("Index");
+        }
+
+        [Authorize(Roles = SD.Roles.Admin + "," + SD.Roles.Employee)]
+        [HttpPost]
+        public IActionResult ShipOrder()
+        {
+            OrderHeader orderHeader = _uow.OrderHeader.GetFirstOrDefault(a => a.Id == DetailsVM.OrderHeader.Id);
+            orderHeader.TrackingNumber = DetailsVM.OrderHeader.TrackingNumber;
+            orderHeader.Carrier = DetailsVM.OrderHeader.Carrier;
+            orderHeader.OrderStatus = SD.OrderStatus.Shipped;
+            orderHeader.PaymentStatus = SD.PaymentStatus.ApprovedForDelayedPayment;
+            orderHeader.ShippingDate = DateTime.Now;
+            _uow.Save();
+            return RedirectToAction("Index");
+        }
+
+        [Authorize(Roles = SD.Roles.Admin + "," + SD.Roles.Employee)]
+        public IActionResult CancelOrder(int id)
+        {
+            OrderHeader orderHeader = _uow.OrderHeader.GetFirstOrDefault(a => a.Id == id);
+            if (orderHeader.PaymentStatus == SD.PaymentStatus.Approved)
+            {
+                var option = new RefundCreateOptions()
+                {
+                    Amount = Convert.ToInt32(orderHeader.OrderTotal * 100),
+                    Reason = RefundReasons.RequestedByCustomer,
+                    Charge = orderHeader.TransactionId
+                };
+                var service = new RefundService();
+                Refund refund = service.Create(option);
+                orderHeader.OrderStatus = SD.OrderStatus.Refunded;
+                orderHeader.PaymentStatus = SD.OrderStatus.Refunded;
+                orderHeader.ShippingDate = DateTime.Now;
+            }
+            else
+            {
+                orderHeader.OrderStatus = SD.OrderStatus.Cancelled;
+                orderHeader.PaymentStatus = SD.OrderStatus.Cancelled;
+            }
+
+            _uow.Save();
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ActionName("Details")]
+        public IActionResult Detail(string stripeToken)
+        {
+            OrderHeader orderHeader = _uow.OrderHeader.GetFirstOrDefault(a => a.Id == DetailsVM.OrderHeader.Id, includeProperties: "ApplicationUser");
+            if (!string.IsNullOrWhiteSpace(stripeToken))
+            {
+                var option = new ChargeCreateOptions
+                {
+                    Amount = Convert.ToInt32(orderHeader.OrderTotal * 100),
+                    Currency = "usd",
+                    Description = "Order ID - " + orderHeader.Id,
+                    Source = stripeToken
+                };
+
+                var service = new ChargeService();
+                Charge charge = service.Create(option);
+                if (charge.BalanceTransactionId == null)
+                    orderHeader.PaymentStatus = SD.PaymentStatus.Rejected;
+                else
+                    orderHeader.TransactionId = charge.BalanceTransactionId;
+
+                if (charge.Status.Equals("Succeeded", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    orderHeader.PaymentStatus = SD.PaymentStatus.Approved;
+                    orderHeader.PaymentDate = DateTime.Now;
+                }
+
+                _uow.Save();
+            }
+
+            return RedirectToAction("Details", "Order", new { id = orderHeader.Id });
+
         }
     }
 }

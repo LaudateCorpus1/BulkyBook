@@ -3,11 +3,14 @@
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+@using Microsoft.Extensions.Options;
 
+@inject IOptions<BulkyBook.Utility.StripeSettings> Stripe
 @model BulkyBook.Models.ViewModels.OrderDetailsVM;
 @using BulkyBook.Utility;
 @{
     var isUserAdminOrEmployee = User.IsInRole(SD.Roles.Admin) || User.IsInRole(SD.Roles.Employee);
+    var orderTotalForStripe = Model.OrderHeader.OrderTotal * 100;
 }
 
 <form method="post">
@@ -134,7 +137,7 @@
                                 <div class="col-9">
                                     @if (isUserAdminOrEmployee)
                                     {
-                                        <input asp-for="OrderHeader.Carrier" type="text" class="form-control" />
+                                        <input asp-for="OrderHeader.Carrier" id="carrier" type="text" class="form-control" />
                                     }
                                     else
                                     {
@@ -147,7 +150,7 @@
                                 <div class="col-9">
                                     @if (isUserAdminOrEmployee)
                                     {
-                                        <input asp-for="OrderHeader.TrackingNumber" type="text" class="form-control" />
+                                        <input asp-for="OrderHeader.TrackingNumber" type="text" id="trackingNumber" class="form-control" />
                                     }
                                     else
                                     {
@@ -225,6 +228,46 @@
                                     </div>
                                 </li>
                             </ul>
+                            @if (Model.OrderHeader.PaymentStatus == SD.PaymentStatus.ApprovedForDelayedPayment &&
+                             Model.OrderHeader.OrderStatus == SD.OrderStatus.Shipped)
+                            {
+                                <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+                                        data-key="@Stripe.Value.PublishableKey"
+                                        data-amount="@orderTotalForStripe"
+                                        data-name="Bulky Book"
+                                        data-label="Place order"
+                                        data-description="Get books for less"
+                                        data-locale="auto"
+                                        data-allow-remember-me="false"
+                                        data-image="https://stripe.com/img/documentation/checkout/marketplace.png"></script>
+                                <script>
+                                    document.getElementsByClassName("stripe-button-el")[0].style.display = 'none';
+                                </script>
+                                <button type="submit" value="Place Order" class="btn btn-success form-control">Pay now</button>
+                            }
+                            @if (isUserAdminOrEmployee)
+                            {
+                                <br />
+                                @if (Model.OrderHeader.OrderStatus == SD.OrderStatus.Approved)
+                                {
+                                    <a asp-action="StartProcessing" asp-route-id="@Model.OrderHeader.Id" class="btn btn-primary form-control">Start Processing</a>
+                                }
+                                else if (Model.OrderHeader.OrderStatus == SD.OrderStatus.Processing)
+                                {
+                                    <input type="Submit" value="Ship Order" onclick="validateInput()" class="btn btn-primary form-control"
+                                           formaction="/Admin/Order/ShipOrder" formmethod="post" />
+                                }
+                                if (Model.OrderHeader.OrderStatus != SD.OrderStatus.Refunded && Model.OrderHeader.OrderStatus != SD.OrderStatus.Cancelled)
+                                {
+                                    <a asp-action="CancelOrder" asp-route-id="@Model.OrderHeader.Id" class="btn btn-danger form-control">Cancel Order</a>
+                                }
+                            }
+                            else
+                            {
+                                <div class="pt-2">
+                                    <label class="btn btn-primary form-control">@Model.OrderHeader.OrderStatus</label>
+                                </div>
+                            }
 
                         </div>
                     </div>
@@ -233,3 +276,35 @@
         </div>
     </div>
 </form>
+
+@section Scripts{
+    <script>
+        function validateInput() {
+            var tracking = document.getElementById("trackingNumber").value;
+            var carrier = document.getElementById("carrier").value;
+            if (!tracking) {
+                swal("Error", "Please enter tracking number");
+                return false;
+            }
+            else if (!carrier) {
+                swal("Error", "Please enter Carrier");
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+
+        $.document.ready(function () {
+            var shippingDate = document.getElementById("shippingDate");
+
+            if (shippingDate.value == '01-01-0001')
+                shippingDate.value = "";
+
+            var paymentDate = document.getElementById("paymentDate");
+            if (paymentDate.value == '01-01-0001')
+                paymentDate.value = "";
+        })
+    </script>
+
+}

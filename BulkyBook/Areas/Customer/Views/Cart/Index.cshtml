@@ -70,7 +70,7 @@
                     </div>
                     <div class="card-footer">
                         <div class="card-footer row">
-                            @if (!Model.OrderHeader.ApplicationUser.EmailConfirmed &&
+                            @*@if (!Model.OrderHeader.ApplicationUser.EmailConfirmed &&
 Model.OrderHeader.ApplicationUser.CompanyId != null &&
 Model.OrderHeader.ApplicationUser.Company.IsAuthorizedCompany)
                             {
@@ -80,11 +80,11 @@ Model.OrderHeader.ApplicationUser.Company.IsAuthorizedCompany)
                                 </div>
                             }
                             else
-                            {
+                            {*@
                                 <div class="col-sm-12 col-lg-4 col-md-6 offset-lg-8 offset-md-6 ">
                                     <a asp-action="Summary" asp-area="Customer" asp-controller="Cart" class="btn btn-success form-control">Summary</a>
                                 </div>
-                            }
+                            @* } *@
                         </div>
                     </div>
                 </div>
