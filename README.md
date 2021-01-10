@@ -42,3 +42,22 @@ Change your target project to the migrations project by using the Package Manage
   - The way images are stored.
   - UnitOfWork (include option if this can be improved)
   - UnitOfWork try to check your project implementation.
+  
+- Enabled 2 factor authentication using microsoft authenticator app/google authenticator app. 
+ For reference - https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity-enable-qrcodes?view=aspnetcore-5.0
+ 
+ Get the qrcode js file and put it in ur solution
+ https://davidshimjs.github.io/qrcodejs/
+ 
+```
+<script type="text/javascript" src="~/lib/qrcode.js"></script>
+
+    <script type="text/javascript">
+        new QRCode(document.getElementById("qrCode"),
+            {
+                text: "@Html.Raw(Model.AuthenticatorUri)",
+                width: 150,
+                height: 150
+            });
+    </script>
+```
