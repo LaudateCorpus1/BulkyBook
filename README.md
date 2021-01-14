@@ -69,3 +69,8 @@ Change your target project to the migrations project by using the Package Manage
             });
     </script>
 ```
+
+- Implemented ViewComponent to display the User name on the top after login in.
+  - Create a controller which will be implementing ViewComponent. 
+  - Get the User details. LayoutPartial was changed to use the viewcomponent. 
+  - Make sure you are creating the view page inside a Component folder -> UserName -> Folder
