@@ -15,6 +15,7 @@ using BulkyBook.Utility;
 using System;
 using Microsoft.AspNetCore.Http;
 using Stripe;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace BulkyBook
 {
@@ -37,6 +38,7 @@ namespace BulkyBook
                   .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddSingleton<IEmailSender, EmailSender>();
+            services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddRazorPages();
             services.AddAutoMapper(typeof(MappingProfile));

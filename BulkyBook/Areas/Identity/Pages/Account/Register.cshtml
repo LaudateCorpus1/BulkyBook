@@ -68,7 +68,7 @@
                             </div>
                         </div>
 
-                        @if (User.IsInRole(SD.Roles.Admin))
+                        @if (User.IsInRole(SD.Roles.Admin) || User.IsInRole(SD.Roles.Employee))
                         {
                             <div class="form-group">
                                 <label asp-for="Input.Role"></label>
