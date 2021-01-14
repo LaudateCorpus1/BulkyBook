@@ -22,7 +22,7 @@ Change your target project to the migrations project by using the Package Manage
   - Get the App ID and App secret and configure the credential in Start up. You need to also install a Facebook .net core package.
 
 
-- Integratimg with Google Login
+- Integration with Google Login
   - Create an account in https://console.developers.google.com/
   - Create a Project
   - Set up with Google+ API
@@ -34,6 +34,14 @@ Change your target project to the migrations project by using the Package Manage
   - Get Client ID and Secret.
   - Configure in Start up middleware.
   - Use javascript script to call the existing UI.
+  
+    
+- Integration with Twilio for SMS service
+  - Create an account in Twilio.
+  - Get Client ID , Secret and Phonenumber.
+  - Configure in Start up middleware and load the settings.
+  - Get Twiolio nuget package.
+  - Write the code to send sms.
   
 - BindProperty - Can be used on the model to post the updated model from View to controller without passing the object in method parameter.
   
@@ -61,3 +69,8 @@ Change your target project to the migrations project by using the Package Manage
             });
     </script>
 ```
+
+- Implemented ViewComponent to display the User name on the top after login in.
+  - Create a controller which will be implementing ViewComponent. 
+  - Get the User details. LayoutPartial was changed to use the viewcomponent. 
+  - Make sure you are creating the view page inside a Component folder -> UserName -> Folder
