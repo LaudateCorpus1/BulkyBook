@@ -8,6 +8,7 @@
 /.vs
 /BulkyBook/.vs
 /BulkyBook/bin/Debug/netcoreapp3.1
+/BulkyBook/bin/Release/netcoreapp3.1
 /BulkyBook/obj
 
 *.cache
@@ -19,3 +20,4 @@
 /BulkyBook.Utility/bin
 /BulkyBook.Utility/obj
 /BulkyBook/wwwroot/images/products
+/BulkyBook/bin/Release/netcoreapp3.1/appsettings.Development.json
