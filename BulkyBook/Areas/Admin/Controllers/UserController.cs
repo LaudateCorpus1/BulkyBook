@@ -33,11 +33,14 @@ namespace BulkyBook.Areas.Admin.Controllers
             var roles = _dbContext.Roles.ToList();
             foreach (var user in userList)
             {
-                var roleID = userRoles.FirstOrDefault(a => a.UserId == user.Id).RoleId;
-                user.Role = roles.FirstOrDefault(a => a.Id == roleID).Name;
+                if (userRoles.FirstOrDefault(a => a.UserId == user.Id) != null)
+                {
+                    var roleID = userRoles.FirstOrDefault(a => a.UserId == user.Id).RoleId;
+                    user.Role = roles.FirstOrDefault(a => a.Id == roleID).Name;
 
-                if (user.Company == null)
-                    user.Company = new Company() { Name = "" };
+                    if (user.Company == null)
+                        user.Company = new Company() { Name = "" };
+                }
             }
 
             return Json(new { data = userList });

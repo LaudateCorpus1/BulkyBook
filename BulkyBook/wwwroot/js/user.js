@@ -25,12 +25,12 @@ function loadDataTable() {
                     if (lockout > today) {
                         //user is locked
                         return `<div class="text-center">
-                                <a onclick=LockUnlock("${data.id}") class="btn-danger text-white" style="cursor:pointer">    <i class="fas fa-lock-open"></i> Unlock </a>
+                                <a onclick=LockUnlock("${data.id}") class="btn btn-danger text-white" style="cursor:pointer">    <i class="fas fa-lock-open"></i> Unlock </a>
                             </div>`
                     }
                     else {
                         return `<div class="text-center">
-                                <a onclick=LockUnlock("${data.id}") class="btn-success text-white" style="cursor:pointer">    <i class="fas fa-lock"></i> Lock </a>
+                                <a onclick=LockUnlock("${data.id}") class="btn btn-success text-white" style="cursor:pointer">    <i class="fas fa-lock"></i> Lock </a>
                             </div>`
                     }
                   
