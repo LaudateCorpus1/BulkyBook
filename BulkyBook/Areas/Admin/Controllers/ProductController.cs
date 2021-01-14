@@ -9,6 +9,7 @@ using System;
 using System.IO;
 using Microsoft.AspNetCore.Authorization;
 using BulkyBook.Utility;
+using System.Threading.Tasks;
 
 namespace BulkyBook.Areas.Admin.Controllers
 {
@@ -30,12 +31,13 @@ namespace BulkyBook.Areas.Admin.Controllers
             return View();
         }
 
-        public IActionResult Upsert(int? id)
+        public async Task<IActionResult> Upsert(int? id)
         {
+            var categoryList = await _uow.Category.GetAllAsync();
             ProductViewModel productVM = new ProductViewModel()
             {
                 Product = new Product(),
-                CategoryList = _uow.Category.GetAll()
+                CategoryList = categoryList
                     .Select(a => new SelectListItem
                     {
                         Value = a.Id.ToString(),
@@ -65,7 +67,7 @@ namespace BulkyBook.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Update(ProductViewModel productVM)
+        public async Task<IActionResult> Update(ProductViewModel productVM)
         {
             if (ModelState.IsValid)
             {
@@ -111,7 +113,8 @@ namespace BulkyBook.Areas.Admin.Controllers
             }
             else
             {
-                productVM.CategoryList = _uow.Category.GetAll()
+                var categoryList = await _uow.Category.GetAllAsync();
+                productVM.CategoryList = categoryList
                     .Select(a => new SelectListItem
                     {
                         Value = a.Id.ToString(),

@@ -3,6 +3,7 @@ using BulkyBook.Models;
 using BulkyBook.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace BulkyBook.Areas.Admin.Controllers
 {
@@ -21,14 +22,14 @@ namespace BulkyBook.Areas.Admin.Controllers
             return View();
         }
 
-        public IActionResult Upsert(int? id)
+        public async Task<IActionResult> Upsert(int? id)
         {
             Category category = new Category();
             if (id == null)
                 return View(category);
             else
             {
-                category = _uow.Category.Get(id.GetValueOrDefault());
+                category = await _uow.Category.GetAsync(id.GetValueOrDefault());
                 if (category == null)
                 {
                     return NotFound();
@@ -39,16 +40,16 @@ namespace BulkyBook.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Update(Category category)
+        public async Task<IActionResult> Update(Category category)
         {
             if (ModelState.IsValid)
             {
                 if (category.Id == 0)
                 {
-                    _uow.Category.Add(category);
+                    await _uow.Category.AddAsync(category);
                 }
                 else
-                    _uow.Category.Update(category);
+                    await _uow.Category.UpdateAsync(category);
 
                 _uow.Save();
 
@@ -59,12 +60,12 @@ namespace BulkyBook.Areas.Admin.Controllers
         }
 
         [HttpDelete]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var category = _uow.Category.Get(id);
+            var category = await _uow.Category.GetAsync(id);
             if (category != null)
             {
-                _uow.Category.Remove(category);
+                await _uow.Category.RemoveAsync(category);
                 _uow.Save();
                 return Json(new { success = true, message = "Successfully deleted" });
             }
@@ -75,9 +76,9 @@ namespace BulkyBook.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var result = _uow.Category.GetAll();
+            var result = await _uow.Category.GetAllAsync();
 
             return Json(new { data = result });
         }

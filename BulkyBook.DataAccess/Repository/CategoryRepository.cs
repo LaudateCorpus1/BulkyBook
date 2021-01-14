@@ -1,16 +1,17 @@
 ﻿using BulkyBook.DataAccess.Data;
 using BulkyBook.DataAccess.Repository.IRepository;
 using BulkyBook.Models;
+using System.Threading.Tasks;
 
 namespace BulkyBook.DataAccess.Repository
 {
-    public class CategoryRepository : Repository<Category>, ICategoryRepository
+    public class CategoryRepository : RepositoryAsync<Category>, ICategoryRepository
     {
         public CategoryRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
-        public void Update(Category entity)
+        public async Task UpdateAsync(Category entity)
         {
-            var category = base.GetFirstOrDefault(a => a.Id == entity.Id);
+            var category = await base.GetFirstOrDefaultAsync(a => a.Id == entity.Id);
 
             if (category != null)
             {

@@ -1,9 +1,10 @@
 ﻿using BulkyBook.Models;
+using System.Threading.Tasks;
 
 namespace BulkyBook.DataAccess.Repository.IRepository
 {
-    public interface ICategoryRepository : IRepository<Category>
+    public interface ICategoryRepository : IRepositoryAsync<Category>
     {
-        void Update(Category entity);
+        Task UpdateAsync(Category entity);
     }
 }
