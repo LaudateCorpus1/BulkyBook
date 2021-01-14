@@ -15,7 +15,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
 using Stripe;
+using Twilio;
+using Twilio.Rest.Api.V2010.Account;
 
 namespace BulkyBook.Areas.Customer.Controllers
 {
@@ -26,6 +29,7 @@ namespace BulkyBook.Areas.Customer.Controllers
         private readonly IEmailSender _emailSender;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IMapper _mapper;
+        private readonly TwilioSettings _twilioSettings;
 
         [BindProperty]
         public ShoppingCartViewModel shoppingCartViewModel { get; set; }
@@ -33,12 +37,14 @@ namespace BulkyBook.Areas.Customer.Controllers
         public CartController(IUnitOfWork uow,
             IEmailSender emailSender,
             UserManager<IdentityUser> userManager,
-            IMapper mapper)
+            IMapper mapper,
+            IOptions<TwilioSettings> twilioOptions)
         {
             _uow = uow;
             _emailSender = emailSender;
             _userManager = userManager;
             _mapper = mapper;
+            _twilioSettings = twilioOptions.Value;
         }
         public IActionResult Index()
         {
@@ -248,6 +254,22 @@ namespace BulkyBook.Areas.Customer.Controllers
 
         public IActionResult OrderConfirmation(int id)
         {
+            OrderHeader orderHeader = _uow.OrderHeader.GetFirstOrDefault(a => a.Id == id);
+
+            TwilioClient.Init(_twilioSettings.AccountSid, _twilioSettings.AuthToken);
+            try
+            {
+                var message = MessageResource.Create(
+                    body: "Order placed on bulky book. Your Order ID: " + id,
+                    from: new Twilio.Types.PhoneNumber(_twilioSettings.PhoneNumber),
+                    to: new Twilio.Types.PhoneNumber(orderHeader.PhoneNumber)
+                    );
+            }
+            catch (Exception ex)
+            {
+
+
+            }
             return View(id);
         }
     }

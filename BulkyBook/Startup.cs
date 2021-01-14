@@ -42,6 +42,7 @@ namespace BulkyBook
             services.AddAutoMapper(typeof(MappingProfile));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.Configure<EmailOptions>(Configuration);
+            services.Configure<TwilioSettings>(Configuration.GetSection("Twilio"));
             services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
 
             services.ConfigureApplicationCookie(options =>
